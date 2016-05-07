@@ -1,8 +1,8 @@
 # Malva Configuration.
-MALLBA_DIR=/lib/computational_intelligence/malva
+MALLBA_DIR=/home/enzofabbiani/Desktop/AE/malva
 
 # MPI library
-MPI_BIN=/usr/local/Cellar/mpich2/3.1/bin
+MPI_BIN=/usr/bin
 
 # Malva information
 MALLBA_INC=${MALLBA_DIR}/src

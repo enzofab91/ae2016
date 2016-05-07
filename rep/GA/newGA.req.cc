@@ -8,13 +8,32 @@ skeleton newGA
 
 	// Problem ---------------------------------------------------------------
 
-	Problem::Problem ():_dimension(0)
+	Problem::Problem ():_dimension(0),_matrizCostos(NULL)
 	{}
 
 	ostream& operator<< (ostream& os, const Problem& pbm)
 	{
 		os << endl << endl << "Number of Variables " << pbm._dimension
 		   << endl;
+
+		//Imprimo el arreglo con los costos
+		os<<"Matriz de costos: "<<endl<<endl;
+		for (int i=0;i<pbm._dimension;i++){
+			for(int j=0;j<pbm._dimension;j++)
+				os<<pbm._matrizCostos[i][j]<<" ";
+			os<<endl;
+		}
+		os<<endl;
+
+		//Imprimo el arreglo con los costos
+		os<<"Matriz de temporadas: "<<endl<<endl;
+		for (int i=0;i<2;i++){
+			for(int j=0;j<3;j++)
+				os<<pbm._matrizTemporadas[i][j]<<" ";
+			os<<endl;
+		}
+		os<<endl;
+
 		return os;
 	}
 
@@ -26,7 +45,125 @@ skeleton newGA
 		is.getline(buffer,MAX_BUFFER,'\n');
 		sscanf(buffer,"%d",&pbm._dimension);
 
+		//Pido memoria para almacenar la matriz de costos
+		pbm._matrizCostos = new int *[pbm._dimension];
+		for (int i=0;i<pbm._dimension;i++){
+			pbm._matrizCostos[i] = new int [pbm._dimension];
+			for (int j=0;j<pbm._dimension;j++)
+				pbm._matrizCostos[i][j]=-1;
+		}
+
+		//Cargo el archivo con costos
+	    FILE* stream = fopen("prueba_matriz", "r");
+
+	    char line[1024];
+	    int j=0;
+	   while (fgets(line, 1024, stream))
+	    {
+
+	        char* tmp = strdup(line);
+	        cout << tmp << endl;
+	        for (int i=0; i<pbm._dimension; i++){
+		        const int costo = pbm.getfieldCostos(tmp,(i+1));
+		        //int costo_int=atoi(costo);
+				tmp = strdup(line);
+		        //const char * limite= pbm.getfield(tmp,i);
+		        pbm._matrizCostos[j][i] = costo;
+		    }
+		    j++;
+		    free(tmp);
+	    }
+
+	    //Pido memoria para almacenar las temporadas
+		for (int i=0;i<2;i++){
+			for (int j=0;j<3;j++)
+				pbm._matrizTemporadas[i][j]=0;
+		}
+
+		//Cargo el archivo con costos
+	   //  stream = fopen("prueba_temporadas", "r");
+
+	   //  j=0;
+	   //  while (fgets(line, 1024, stream))
+	   //  {
+
+	   //      char* tmp = strdup(line);
+	   //      for (int i=0; i<2; i++){
+		  //       const char * temporada = pbm.getfieldTemporadas(tmp,i);
+		  //       int temporada_int =atoi(temporada);
+				// tmp = strdup(line);	
+		  //       //const char * limite= pbm.getfield(tmp,i);
+		  //       pbm._matrizTemporadas[i][j] = temporada_int;
+		  //   }
+		  //   j++;
+		  //   free(tmp);
+	   //  }
+
+
+		cout<<pbm;
 		return is;
+	}
+
+	const int Problem::getfieldCostos(char* line, int num){
+		string lineaux = line;
+		int iter = 0;
+		for (int i=0;i < linaux.length(); i++){
+			if (lineaux[i] == ' '){
+				if (num == 1){
+					cout << "IMPRIME primer pos= " << lineaux.substr(0,i)<<endl;
+    				return atoi(line_sub.substr(0,i).c_str());
+    			} else {
+    				if (num == iter){
+		   				int last = i+1;
+		   				while ((last < lineaux.length()) && (lineaux[last] != ' '))
+		   					last++;
+		   				cout << "IMPRIME = " << line_sub.substr((i+1),(last-i+1)).c_str()<<endl;
+		   				return atoi(line_sub.substr((i+1),(last-i+1)).c_str());
+		   			}
+    			}
+			}
+		}
+	}
+
+	//Funcion para leer el archivo TXT
+	// const int Problem::getfieldCostos(char* line, int num)
+	// {
+	//    string lineaux = line;
+	//    string line_sub = line;
+	//    int iter = 1;
+	//    cout << "num = " << num;
+	//    for (int i=0;i<lineaux.length();i++){
+	//    		if (lineaux[i] == ' '){
+	//    			cout << "iter = " << iter <<endl;
+	//    			if (num == 1){
+	// 				cout << "IMPRIME primer pos= " << lineaux.substr(0,i)<<endl;
+ //   					return atoi(line_sub.substr(0,i).c_str());
+ //   				} else	
+	//    				if (num == iter-1){
+	// 	   				int last = i+1;
+	// 	   				while ((last < lineaux.length()) && (lineaux[last] != ' '))
+	// 	   					last++;
+	// 	   				cout << "IMPRIME = " << line_sub.substr((i+1),(last-i+1)).c_str()<<endl;
+	// 	   				return atoi(line_sub.substr((i+1),(last-i+1)).c_str());
+	//    			} else {
+	//    				// line_sub = line_sub.substr((i+1),lineaux.length());
+	//    				iter++;
+	//    			}
+	//    		}
+	//    }
+	// }
+
+	const char* Problem::getfieldTemporadas(char* line, int num)
+	{
+	    const char* tok;
+	    for (tok = strtok(line, ",");
+	            tok && *tok;
+	            tok = strtok(NULL, ",\n"))
+	    {
+	        if (!--num)
+	            return tok;
+	    }
+	    return NULL;
 	}
 
 	bool Problem::operator== (const Problem& pbm) const
