@@ -27,8 +27,8 @@ skeleton newGA
 
 		//Imprimo el arreglo con los costos
 		os<<"Matriz de temporadas: "<<endl<<endl;
-		for (int i=0;i<2;i++){
-			for(int j=0;j<3;j++)
+		for (int i=0;i<3;i++){
+			for(int j=0;j<2;j++)
 				os<<pbm._matrizTemporadas[i][j]<<" ";
 			os<<endl;
 		}
@@ -58,16 +58,13 @@ skeleton newGA
 
 	    char line[1024];
 	    int j=0;
-	   while (fgets(line, 1024, stream))
+	   	while (fgets(line, 1024, stream))
 	    {
 
 	        char* tmp = strdup(line);
-	        cout << tmp << endl;
 	        for (int i=0; i<pbm._dimension; i++){
-		        const int costo = pbm.getfieldCostos(tmp,(i+1));
-		        //int costo_int=atoi(costo);
+		        const int costo = pbm.getField(tmp,i+1,' ');
 				tmp = strdup(line);
-		        //const char * limite= pbm.getfield(tmp,i);
 		        pbm._matrizCostos[j][i] = costo;
 		    }
 		    j++;
@@ -75,100 +72,62 @@ skeleton newGA
 	    }
 
 	    //Pido memoria para almacenar las temporadas
-		for (int i=0;i<2;i++){
-			for (int j=0;j<3;j++)
+		for (int i=0;i<3;i++){
+			for (int j=0;j<2;j++)
 				pbm._matrizTemporadas[i][j]=0;
 		}
 
 		//Cargo el archivo con costos
-	   //  stream = fopen("prueba_temporadas", "r");
+	    stream = fopen("prueba_temporadas", "r");
 
-	   //  j=0;
-	   //  while (fgets(line, 1024, stream))
-	   //  {
+	    j=0;
+	    while (fgets(line, 1024, stream))
+	    {
 
-	   //      char* tmp = strdup(line);
-	   //      for (int i=0; i<2; i++){
-		  //       const char * temporada = pbm.getfieldTemporadas(tmp,i);
-		  //       int temporada_int =atoi(temporada);
-				// tmp = strdup(line);	
-		  //       //const char * limite= pbm.getfield(tmp,i);
-		  //       pbm._matrizTemporadas[i][j] = temporada_int;
-		  //   }
-		  //   j++;
-		  //   free(tmp);
-	   //  }
+	        char* tmp = strdup(line);
+	        for (int i=0; i<3; i++){
+		        const int temporada = pbm.getField(tmp,i,',');
+		        pbm._matrizTemporadas[i][j] = temporada;
+		    }
+		    j++;
+		    free(tmp);
+	    }
 
 
 		cout<<pbm;
 		return is;
 	}
 
-	//prueba enzo
-	const int Problem::getfieldCostos(char* line, int num){
-		string lineaux = line;
-		int iter = 0;
-		for (int i=0;i < linaux.length(); i++){
-			if (lineaux[i] == ' '){
-				if (num == 1){
-					cout << "IMPRIME primer pos= " << lineaux.substr(0,i)<<endl;
-    				return atoi(line_sub.substr(0,i).c_str());
-    			} else {
-    				if (num == iter){
-		   				int last = i+1;
-		   				while ((last < lineaux.length()) && (lineaux[last] != ' '))
-		   					last++;
-		   				cout << "IMPRIME = " << line_sub.substr((i+1),(last-i+1)).c_str()<<endl;
-		   				return atoi(line_sub.substr((i+1),(last-i+1)).c_str());
-		   			}
-    			}
+	//Funcion para leer el archivo TXT
+	int Problem::getField(string input, int num, char separator){
+		int iter = 1;
+
+		for(int i=0; i < input.length();i++){
+			if(input[i] == separator){
+				if(num == 1){
+					return atoi(input.substr(0,i).c_str());
+				} else {
+					iter++;
+					if (iter == num){
+						int j = iter + 1;
+						while(input[j] != separator)
+						j++;
+
+						return atoi(input.substr(i+1, j - (i + 1)).c_str());
+					}
+				}
 			}
 		}
 	}
 
-	//fin prueba enzo
-
-	//Funcion para leer el archivo TXT
-	// const int Problem::getfieldCostos(char* line, int num)
-	// {
-	//    string lineaux = line;
-	//    string line_sub = line;
-	//    int iter = 1;
-	//    cout << "num = " << num;
-	//    for (int i=0;i<lineaux.length();i++){
-	//    		if (lineaux[i] == ' '){
-	//    			cout << "iter = " << iter <<endl;
-	//    			if (num == 1){
-	// 				cout << "IMPRIME primer pos= " << lineaux.substr(0,i)<<endl;
- //   					return atoi(line_sub.substr(0,i).c_str());
- //   				} else	
-	//    				if (num == iter-1){
-	// 	   				int last = i+1;
-	// 	   				while ((last < lineaux.length()) && (lineaux[last] != ' '))
-	// 	   					last++;
-	// 	   				cout << "IMPRIME = " << line_sub.substr((i+1),(last-i+1)).c_str()<<endl;
-	// 	   				return atoi(line_sub.substr((i+1),(last-i+1)).c_str());
-	//    			} else {
-	//    				// line_sub = line_sub.substr((i+1),lineaux.length());
-	//    				iter++;
-	//    			}
-	//    		}
-	//    }
-	// }
-
-	const char* Problem::getfieldTemporadas(char* line, int num)
-	{
-	    const char* tok;
-	    for (tok = strtok(line, ",");
-	            tok && *tok;
-	            tok = strtok(NULL, ",\n"))
-	    {
-	        if (!--num)
-	            return tok;
-	    }
-	    return NULL;
+	int ** Problem::matrizCostos(){
+		return _matrizCostos;
 	}
 
+	int Problem::matrizTemporadas() const{
+		return _matrizTemporadas[3][2];
+	}
+	
 	bool Problem::operator== (const Problem& pbm) const
 	{
 		if (_dimension!=pbm.dimension()) return false;
@@ -259,16 +218,50 @@ skeleton newGA
 
 	void Solution::initialize()
 	{
-		for (int i=0;i<_pbm.dimension();i++)
-			_var[i]=rand_int(0,1);
+		int max = _pbm.dimension();
+		int aux, ind1, ind2;
+
+		_var[0] = 0; //arranca en mvd
+
+		//inicializo el arreglo como el camino ordenado
+		for (int i=1;i<_pbm.dimension();i++)
+			_var[i]= i;
+
+		// move values to create random array
+		for(int i=0;i< (max*5) ; i++)
+		{
+			ind1 = rand_int(1,max-1);
+			ind2 = rand_int(1,max-1);
+
+			aux = _var[ind1];
+			_var[ind1] = _var[ind2];
+			_var[ind2] = aux;
+		}
 	}
 
 	double Solution::fitness ()
 	{
         double fitness = 0.0;
+        int dia = 1;
+        int costo;
+        int sobrecosto_temp_media = 0.1;
+        int sobrecosto_temp_alta = 0.3;
 
-		for (int i=0;i<_var.size();i++)
-			fitness += _var[i];
+		for (int i=1;i<_var.size();i++){
+		//TODO: esto no esta compilando
+
+		// 	costo =  0; //var[i-1][i];
+		// para mi la temprada baja incluiria el dia que termina tambien,
+		// pero en el validador de ellos no es asi
+		// 	if (dia < pbm().matrizTemporadas()[1][2])
+		// 		fitness += costo;
+		// 	else if (dia < pbm().matrizTemporadas()[2][2])
+		// 		fitness += costo + round(costo*sobrecosto_temp_media);
+		// 	else
+		// 		fitness += costo + round(costo*sobrecosto_temp_alta);
+
+		// 	dia += 5;
+		// }
 
 		return fitness;
 	}

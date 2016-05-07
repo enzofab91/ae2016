@@ -63,14 +63,15 @@ skeleton newGA
 		Direction direction () const;
 
 		int dimension() const;
-		const int getfieldCostos(char* line, int num);
-		const char* getfieldTemporadas(char* line, int num);
+		int getField(string input, int num, char separator);
+		int ** matrizCostos();
+		int matrizTemporadas() const;
 
 	private:
 
 		int _dimension;
 		int ** _matrizCostos;
-		int _matrizTemporadas[2][3];
+		int _matrizTemporadas[3][2];
   };
 
 //Solution ----------------------------------------------------------------------------
