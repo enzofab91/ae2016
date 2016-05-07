@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## What is Malva?
 
 Malva is a fork of the MALLBA project. MALLBA is an effort to develop, in an integrated way, a
@@ -276,3 +277,6 @@ make LAN
     or
 make WAN
 ```
+=======
+# ae2016
+>>>>>>> 633f502389498da88a23a58398ba925ebb8b5e08

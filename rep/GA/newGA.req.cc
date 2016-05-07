@@ -104,6 +104,7 @@ skeleton newGA
 		return is;
 	}
 
+	//prueba enzo
 	const int Problem::getfieldCostos(char* line, int num){
 		string lineaux = line;
 		int iter = 0;
@@ -124,6 +125,8 @@ skeleton newGA
 			}
 		}
 	}
+
+	//fin prueba enzo
 
 	//Funcion para leer el archivo TXT
 	// const int Problem::getfieldCostos(char* line, int num)
