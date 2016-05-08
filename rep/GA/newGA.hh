@@ -65,7 +65,12 @@ skeleton newGA
 		int dimension() const;
 		int getField(string input, int num, char separator);
 		int ** matrizCostos();
-		int matrizTemporadas() const;
+		int getInicioTempBaja();
+		int getFinTempBaja();
+		int getInicioTempMedia();
+		int getFinTempMedia();
+		int getInicioTempAlta();
+		int getFinTempAlta();
 
 	private:
 

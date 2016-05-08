@@ -3,8 +3,7 @@
 #include "newGA.hh"
 #include <math.h>
 
-skeleton newGA
-{
+skeleton newGA{
 
 	// Problem ---------------------------------------------------------------
 
@@ -124,8 +123,28 @@ skeleton newGA
 		return _matrizCostos;
 	}
 
-	int Problem::matrizTemporadas() const{
-		return _matrizTemporadas[3][2];
+	int Problem::getInicioTempBaja(){
+		return _matrizTemporadas[0][0];
+	}
+	
+	int Problem::getFinTempBaja(){
+		return _matrizTemporadas[0][1];
+	}
+	
+	int Problem::getInicioTempMedia(){
+		return _matrizTemporadas[1][0];
+	}
+	
+	int Problem::getFinTempMedia(){
+		return _matrizTemporadas[1][1];
+	}
+	
+	int Problem::getInicioTempAlta(){
+		return _matrizTemporadas[2][0];
+	}
+	
+	int Problem::getFinTempAlta(){
+		return _matrizTemporadas[2][1];
 	}
 	
 	bool Problem::operator== (const Problem& pbm) const
@@ -243,25 +262,28 @@ skeleton newGA
 	{
         double fitness = 0.0;
         int dia = 1;
-        int costo;
+        int costo = 0;
         int sobrecosto_temp_media = 0.1;
         int sobrecosto_temp_alta = 0.3;
 
 		for (int i=1;i<_var.size();i++){
 		//TODO: esto no esta compilando
 
-		// 	costo =  0; //var[i-1][i];
-		// para mi la temprada baja incluiria el dia que termina tambien,
-		// pero en el validador de ellos no es asi
-		// 	if (dia < pbm().matrizTemporadas()[1][2])
-		// 		fitness += costo;
-		// 	else if (dia < pbm().matrizTemporadas()[2][2])
-		// 		fitness += costo + round(costo*sobrecosto_temp_media);
-		// 	else
-		// 		fitness += costo + round(costo*sobrecosto_temp_alta);
+		    //var[i-1][i];
+			//para mi la temprada baja incluiria el dia que termina tambien,
+			//pero en el validador de ellos no es asi
+			
+			//~ dia = _pbm.matrizTemporadas()[2][3];
+			
+		 	//~ if (dia < pbm().matrizTemporadas()[1][2])
+		 		//~ fitness += costo;
+		 	//~ else if (dia < pbm().matrizTemporadas()[2][2])
+		 		//~ fitness += costo + round(costo*sobrecosto_temp_media);
+		 	//~ else
+		 		//~ fitness += costo + round(costo*sobrecosto_temp_alta);
 
-		// 	dia += 5;
-		// }
+		 	//~ dia += 5;
+		 }
 
 		return fitness;
 	}
