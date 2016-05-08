@@ -3,4 +3,8 @@
 .svn/
 .idea/
 .DS_Store
-
+environment
+*.o
+rep/GA/MainLan
+rep/GA/MainSeq
+.cproject

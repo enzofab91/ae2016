@@ -1,5 +1,5 @@
 # Malva Configuration.
-MALLBA_DIR=/home/enzofabbiani/Desktop/AE/malva
+MALLBA_DIR=/home/pablo/Fing/ae2016_2
 
 # MPI library
 MPI_BIN=/usr/bin
