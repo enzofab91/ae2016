@@ -119,31 +119,38 @@ skeleton newGA{
 		}
 	}
 
-	int ** Problem::matrizCostos(){
+	int ** Problem::matrizCostos() const
+	{
 		return _matrizCostos;
 	}
 
-	int Problem::getInicioTempBaja(){
+	int Problem::getInicioTempBaja() const
+	{
 		return _matrizTemporadas[0][0];
 	}
 	
-	int Problem::getFinTempBaja(){
+	int Problem::getFinTempBaja() const
+	{
 		return _matrizTemporadas[0][1];
 	}
 	
-	int Problem::getInicioTempMedia(){
+	int Problem::getInicioTempMedia() const
+	{
 		return _matrizTemporadas[1][0];
 	}
 	
-	int Problem::getFinTempMedia(){
+	int Problem::getFinTempMedia() const
+	{
 		return _matrizTemporadas[1][1];
 	}
 	
-	int Problem::getInicioTempAlta(){
+	int Problem::getInicioTempAlta() const
+	{
 		return _matrizTemporadas[2][0];
 	}
 	
-	int Problem::getFinTempAlta(){
+	int Problem::getFinTempAlta() const
+	{
 		return _matrizTemporadas[2][1];
 	}
 	
@@ -262,12 +269,31 @@ skeleton newGA{
 	{
         double fitness = 0.0;
         int dia = 1;
-        int costo = 0;
         int sobrecosto_temp_media = 0.1;
         int sobrecosto_temp_alta = 0.3;
+        int** costos = _pbm.matrizCostos();
 
+		if(dia >= _pbm.getInicioTempBaja() && dia < _pbm.getFinTempBaja())
+			fitness += costos[1][_var[1]];
+			
+		if(dia >= _pbm.getInicioTempMedia() && dia < _pbm.getFinTempMedia())
+			fitness += costos[1][_var[1]] + round(costos[1][_var[1]] * sobrecosto_temp_media);
+			
+		if(dia >= _pbm.getInicioTempAlta() && dia < _pbm.getFinTempAlta())
+			fitness += costos[1][_var[1]] + round(costos[1][_var[1]] * sobrecosto_temp_alta);
+			
+			
 		for (int i=1;i<_var.size();i++){
 		//TODO: esto no esta compilando
+		
+			if(dia >= _pbm.getInicioTempBaja() && dia < _pbm.getFinTempBaja())
+				fitness += costos[_var[i]][_var[i+1]];
+				
+			else if(dia >= _pbm.getInicioTempMedia() && dia < _pbm.getFinTempMedia())
+				fitness += costos[_var[i]][_var[i+1]] + round(costos[_var[i]][_var[i+1]] * sobrecosto_temp_media);
+				
+			else if(dia >= _pbm.getInicioTempAlta() && dia < _pbm.getFinTempAlta())
+				fitness += costos[_var[i]][_var[i+1]] + round(costos[_var[i]][_var[i+1]] * sobrecosto_temp_alta);
 
 		    //var[i-1][i];
 			//para mi la temprada baja incluiria el dia que termina tambien,
@@ -282,7 +308,7 @@ skeleton newGA{
 		 	//~ else
 		 		//~ fitness += costo + round(costo*sobrecosto_temp_alta);
 
-		 	//~ dia += 5;
+		 	dia += 5;
 		 }
 
 		return fitness;
