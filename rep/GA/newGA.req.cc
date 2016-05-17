@@ -338,6 +338,11 @@ skeleton newGA{
 	{
 		return (_pbm.dimension() * sizeof(int));
 	}
+	
+	unsigned int Solution::dimension() const
+	{
+		return (_pbm.dimension());
+	}
 
 
 	int& Solution::var(const int index)
@@ -459,63 +464,98 @@ skeleton newGA{
 
 	void Crossover::cross(Solution& sol1,Solution& sol2) const // dadas dos soluciones de la poblacion, las cruza
 	{
-		int i;
-		int j1,j2;
-		const int max = sol1.pbm().dimension();
-
+		int i,j;
+		int dim = sol1.dimension();
+		
 		// Copy old solutions
-		Rarray<int> aux1(max);
+		Rarray<int> aux1(dim);
 		aux1=sol1.array_var();
-		Rarray<int> aux2(max);
+		Rarray<int> aux2(dim);
 		aux2=sol2.array_var();
-
-		// esta?[i] = true  if i+1 is in segement or false in otherwise
-		bool *esta1 = new bool[max];
-		bool *esta2 = new bool[max];
-
-		int limit2=rand_int(1,max-1);
+		int limit2=rand_int(1,dim-1);
 		int limit1=rand_int(0,limit2-1);
-
-		for (i = 0; i < max; i++)
-		{
-			esta1[i] = false;
-			esta2[i] = false;
-		}
 
 		for (i = limit1; i < limit2; i++)
 		{
-			sol1.var(i) = aux1[i];
-			sol2.var(i) = aux2[i];
-			esta1[aux1[i]-1] = true;
-			esta2[aux2[i]-1] = true;
+			//~ cout << "i=" << i << " AUX1=" << aux1[i] << " AUX2=" << aux2[i] << endl;
+			sol2.var(i) = aux1[i];
+			sol1.var(i) = aux2[i];
+			
 		}
 
-		j1 = j2 = i = limit2;
-
-		if((limit1 != 0) || (limit2 != max))
+		for (i = 0; i < limit1; i++)
 		{
-			while( i != limit1 )
-			{
-				while( esta1[aux2[j1]-1])
-					j1 = (j1 + 1) % max;
-
-				sol1.var(i) = aux2[j1];
-				esta1[aux2[j1]-1] = true;
-				j1 = (j1 + 1) % max;
-
-				while( esta2[aux1[j2]-1])
-					j2 = (j2 + 1) % max;
-
-				sol2.var(i) = aux1[j2];
-				esta2[aux1[j2]-1] = true;
-				j2 = (j2 + 1) % max;
-
-				i = (i + 1) % max;
-			}
+			sol1.var(i) = newValue(aux1[i],limit1,limit2,aux1,aux2);
+			sol2.var(i) = newValue(aux2[i],limit1,limit2,aux2,aux1);
 		}
 
-		delete [] esta1;
-		delete [] esta2;
+		for (i = limit2; i < dim; i++)
+		{
+			sol1.var(i) = newValue(aux1[i],limit1,limit2,aux1,aux2);
+		 	sol2.var(i) = newValue(aux2[i],limit1,limit2,aux2,aux1);
+		}
+
+		complete(sol1);
+		complete(sol2);
+	}
+	
+	// Auxiliar function for PMX
+	int Crossover::newValue(const int oldValue,const int l1,const int l2, Rarray<int> & s1, Rarray<int> & s2) const
+	{
+		bool fin = false;
+		int nv = oldValue;
+		int n = s1.size();
+		bool *examinado = new bool[n];
+
+		for(int i = 0; i < n; i++) examinado[i] = false;
+
+		while (!fin)
+		{
+			fin = true;
+			for(int i = l1; i < l2; i++)
+				if(nv == s2[i])
+				{
+					if(!examinado[i])
+					{
+        					nv = s1[i];
+						examinado[i] = true;
+        					fin = false;
+					}
+					else	nv = -1;
+        				break;
+				}
+		}
+
+		delete [] examinado;
+
+		return nv;
+	}
+
+	void Crossover::complete(Solution& s) const
+	{
+		int num = 0;
+		int n = s.dimension();//s.size();
+		int j,k;
+		bool *escogido = new bool[n];
+
+		for(int i = 0; i < n; i++) escogido[i] = false;
+
+		for(int i = 0; i < n; i++)
+		{
+			if(s.var(i) != -1) escogido[s.var(i)/*-1*/] = true;
+			else num++;
+		}
+
+		j =  k = 0;
+		for(int i = 0; i < num; i++)
+		{
+			while((j < n) && (s.var(j) != -1)) j++;
+			while((k < n) && escogido[k]) k++;
+
+			s.var(j) = k+1;
+		}
+
+		delete [] escogido;
 	}
 
 	void Crossover::execute(Rarray<Solution*>& sols) const
@@ -567,12 +607,12 @@ skeleton newGA{
 		const int tam = sol.pbm().dimension();
 		int swap1 = 0;
 		int swap2 = 0;
-		swap1 = rand_int(1,tam);
-		swap2 = rand_int(1,tam);
+		swap1 = rand_int(1,tam-1);
+		swap2 = rand_int(1,tam-1);
 		
 		while(swap1 == swap2){
-			swap1 = rand_int(1,tam);
-			swap2 =  rand_int(1,tam);
+			swap1 = rand_int(1,tam-1);
+			swap2 =  rand_int(1,tam-1);
 		}
 		
 		int aux = sol.var(swap1);

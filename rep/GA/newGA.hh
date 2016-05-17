@@ -108,6 +108,7 @@ skeleton newGA
 		void initialize();
 		double fitness ();
 		unsigned int size() const;
+		unsigned int dimension() const;
 
 		int& var(const int index);
 		Rarray<int>& array_var();
@@ -185,6 +186,8 @@ skeleton newGA
 
 		virtual void RefreshState(const StateCenter& _sc) const;
 		virtual void UpdateFromState(const StateCenter& _sc);
+		int newValue(const int oldValue,const int l1,const int l2, Rarray<int> & s1, Rarray<int> & s2) const;
+		void complete(Solution& s) const;
   };
 
 // Mutation ----------------------------------------------------------------------------------
