@@ -10,6 +10,9 @@
 #ifndef INC_newGA
 #define INC_newGA
 #include "newGAstructures.hh"
+#include <limits.h>
+
+//using namespace std;
 
 skeleton newGA
 {

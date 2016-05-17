@@ -167,8 +167,8 @@ skeleton newGA{
 
 	Direction Problem::direction() const
 	{
-		return maximize;
-		//return minimize;
+		//return maximize;
+		return minimize;
 	}
 
 	int Problem::dimension() const
@@ -267,6 +267,11 @@ skeleton newGA{
 
 	double Solution::fitness ()
 	{
+		//En caso que no sea montevideo la primer ciudad
+		if(_var[0] != 0)
+			return float(INT_MAX);
+		
+		
         double fitness = 0.0;
         int dia = 1;
         int sobrecosto_temp_media = 0.1;
@@ -274,13 +279,13 @@ skeleton newGA{
         int** costos = _pbm.matrizCostos();
 
 		if(dia >= _pbm.getInicioTempBaja() && dia < _pbm.getFinTempBaja())
-			fitness += costos[1][_var[1]];
+			fitness += costos[0][_var[1]];
 			
 		if(dia >= _pbm.getInicioTempMedia() && dia < _pbm.getFinTempMedia())
-			fitness += costos[1][_var[1]] + round(costos[1][_var[1]] * sobrecosto_temp_media);
+			fitness += costos[0][_var[1]] + round(costos[0][_var[1]] * sobrecosto_temp_media);
 			
 		if(dia >= _pbm.getInicioTempAlta() && dia < _pbm.getFinTempAlta())
-			fitness += costos[1][_var[1]] + round(costos[1][_var[1]] * sobrecosto_temp_alta);
+			fitness += costos[0][_var[1]] + round(costos[0][_var[1]] * sobrecosto_temp_alta);
 			
 			
 		for (int i=1;i<_var.size();i++){
@@ -454,21 +459,63 @@ skeleton newGA{
 
 	void Crossover::cross(Solution& sol1,Solution& sol2) const // dadas dos soluciones de la poblacion, las cruza
 	{
-		int i=0;
-		Rarray<int> aux(sol1.pbm().dimension());
-		aux=sol2.array_var();
+		int i;
+		int j1,j2;
+		const int max = sol1.pbm().dimension();
 
-		int limit=rand_int((sol1.pbm().dimension()/2)+1,sol1.pbm().dimension()-1);
-		int limit2=rand_int(0,limit-1);
+		// Copy old solutions
+		Rarray<int> aux1(max);
+		aux1=sol1.array_var();
+		Rarray<int> aux2(max);
+		aux2=sol2.array_var();
 
-		for (i=0;i<limit2;i++)
-			sol2.var(i)=sol1.var(i);
-		for (i=0;i<limit2;i++)
-			sol1.var(i)=aux[i];
-		for (i=limit;i<sol1.pbm().dimension();i++)
-			sol2.var(i)=sol1.var(i);
-		for (i=limit;i<sol1.pbm().dimension();i++)
-			sol1.var(i)=aux[i];
+		// esta?[i] = true  if i+1 is in segement or false in otherwise
+		bool *esta1 = new bool[max];
+		bool *esta2 = new bool[max];
+
+		int limit2=rand_int(1,max-1);
+		int limit1=rand_int(0,limit2-1);
+
+		for (i = 0; i < max; i++)
+		{
+			esta1[i] = false;
+			esta2[i] = false;
+		}
+
+		for (i = limit1; i < limit2; i++)
+		{
+			sol1.var(i) = aux1[i];
+			sol2.var(i) = aux2[i];
+			esta1[aux1[i]-1] = true;
+			esta2[aux2[i]-1] = true;
+		}
+
+		j1 = j2 = i = limit2;
+
+		if((limit1 != 0) || (limit2 != max))
+		{
+			while( i != limit1 )
+			{
+				while( esta1[aux2[j1]-1])
+					j1 = (j1 + 1) % max;
+
+				sol1.var(i) = aux2[j1];
+				esta1[aux2[j1]-1] = true;
+				j1 = (j1 + 1) % max;
+
+				while( esta2[aux1[j2]-1])
+					j2 = (j2 + 1) % max;
+
+				sol2.var(i) = aux1[j2];
+				esta2[aux1[j2]-1] = true;
+				j2 = (j2 + 1) % max;
+
+				i = (i + 1) % max;
+			}
+		}
+
+		delete [] esta1;
+		delete [] esta2;
 	}
 
 	void Crossover::execute(Rarray<Solution*>& sols) const
@@ -517,14 +564,20 @@ skeleton newGA{
 
 	void Mutation::mutate(Solution& sol) const
 	{
-		for (int i=0;i<sol.pbm().dimension();i++)
-		{
-			if (rand01()<=probability[1])
-			{
-				if (sol.var(i)==1) sol.var(i)=0;
-			 	else sol.var(i)=1;
-			}
+		const int tam = sol.pbm().dimension();
+		int swap1 = 0;
+		int swap2 = 0;
+		swap1 = rand_int(1,tam);
+		swap2 = rand_int(1,tam);
+		
+		while(swap1 == swap2){
+			swap1 = rand_int(1,tam);
+			swap2 =  rand_int(1,tam);
 		}
+		
+		int aux = sol.var(swap1);
+		sol.var(swap1) = sol.var(swap2);
+		sol.var(swap2) = aux;
 	}
 
 	void Mutation::execute(Rarray<Solution*>& sols) const
