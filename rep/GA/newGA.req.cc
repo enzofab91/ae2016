@@ -76,7 +76,7 @@ skeleton newGA{
 				pbm._matrizTemporadas[i][j]=0;
 		}
 
-		//Cargo el archivo con costos
+		//Cargo el archivo con temporadas
 	    stream = fopen("prueba_temporadas", "r");
 
 	    j=0;
@@ -84,9 +84,9 @@ skeleton newGA{
 	    {
 
 	        char* tmp = strdup(line);
-	        for (int i=0; i<3; i++){
-		        const int temporada = pbm.getField(tmp,i,',');
-		        pbm._matrizTemporadas[i][j] = temporada;
+	        for (int i=0; i<2; i++){
+		        const int temporada = pbm.getField(tmp,i+1,',');
+		        pbm._matrizTemporadas[j][i] = temporada;
 		    }
 		    j++;
 		    free(tmp);
@@ -272,49 +272,28 @@ skeleton newGA{
 			return float(INT_MAX);
 		
 		
-        double fitness = 0.0;
+        double fitness = 0.0d;
         int dia = 1;
-        int sobrecosto_temp_media = 0.1;
-        int sobrecosto_temp_alta = 0.3;
+        float sobrecosto_temp_media = 0.1;
+        float sobrecosto_temp_alta = 0.3;
         int** costos = _pbm.matrizCostos();
-
-		if(dia >= _pbm.getInicioTempBaja() && dia < _pbm.getFinTempBaja())
-			fitness += costos[0][_var[1]];
-			
-		if(dia >= _pbm.getInicioTempMedia() && dia < _pbm.getFinTempMedia())
-			fitness += costos[0][_var[1]] + round(costos[0][_var[1]] * sobrecosto_temp_media);
-			
-		if(dia >= _pbm.getInicioTempAlta() && dia < _pbm.getFinTempAlta())
-			fitness += costos[0][_var[1]] + round(costos[0][_var[1]] * sobrecosto_temp_alta);
-			
-			
-		for (int i=1;i<_var.size();i++){
-		//TODO: esto no esta compilando
+        int costo = 0;
 		
-			if(dia >= _pbm.getInicioTempBaja() && dia < _pbm.getFinTempBaja())
-				fitness += costos[_var[i]][_var[i+1]];
-				
-			else if(dia >= _pbm.getInicioTempMedia() && dia < _pbm.getFinTempMedia())
-				fitness += costos[_var[i]][_var[i+1]] + round(costos[_var[i]][_var[i+1]] * sobrecosto_temp_media);
-				
-			else if(dia >= _pbm.getInicioTempAlta() && dia < _pbm.getFinTempAlta())
-				fitness += costos[_var[i]][_var[i+1]] + round(costos[_var[i]][_var[i+1]] * sobrecosto_temp_alta);
-
-		    //var[i-1][i];
-			//para mi la temprada baja incluiria el dia que termina tambien,
-			//pero en el validador de ellos no es asi
+		for(int i = 1; i< _pbm.dimension();i++){
+			costo = costos[_var[i-1]][_var[i]];
 			
-			//~ dia = _pbm.matrizTemporadas()[2][3];
+			if(dia < _pbm.getFinTempBaja()){
+				fitness += costo;
+			}
+			else if(dia < _pbm.getFinTempMedia()){
+				fitness += costo + round(costo * sobrecosto_temp_media);
+			}
+			else{
+				fitness += costo + round(costo * sobrecosto_temp_alta);
+			}
 			
-		 	//~ if (dia < pbm().matrizTemporadas()[1][2])
-		 		//~ fitness += costo;
-		 	//~ else if (dia < pbm().matrizTemporadas()[2][2])
-		 		//~ fitness += costo + round(costo*sobrecosto_temp_media);
-		 	//~ else
-		 		//~ fitness += costo + round(costo*sobrecosto_temp_alta);
-
-		 	dia += 5;
-		 }
+			dia += 5;
+		}
 
 		return fitness;
 	}
@@ -665,7 +644,12 @@ skeleton newGA{
 
 	bool StopCondition_1::EvaluateCondition(const Problem& pbm,const Solver& solver,const SetUpParams& setup)
 	{
-		return ((int)solver.best_cost_trial() == pbm.dimension());
+		//return ((int)solver.best_cost_trial() == pbm.dimension());
+		//~ if(solver.best_cost_trial() == solver.global_best_cost()){
+			//~ return true;
+		//~ }
+		return false;
+		//int sol = solver
 	}
 
 	StopCondition_1::~StopCondition_1()

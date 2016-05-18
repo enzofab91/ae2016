@@ -112,10 +112,15 @@ skeleton newGA
 
 		int& var(const int index);
 		Rarray<int>& array_var();
+		
+		int getCantVecesRepetido() {return cant_veces_repetido;};
+		void addCantVecesRepetido(){cant_veces_repetido++;};
+		void resetCantVecesRepetido() {cant_veces_repetido = 0;};
 
 	private:
 		Rarray<int> _var;
 		const Problem& _pbm;
+		int cant_veces_repetido;
   };
 
 // UserStatistics ----------------------------------------------------------------------------
