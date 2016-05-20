@@ -645,11 +645,21 @@ skeleton newGA{
 	bool StopCondition_1::EvaluateCondition(const Problem& pbm,const Solver& solver,const SetUpParams& setup)
 	{
 		//return ((int)solver.best_cost_trial() == pbm.dimension());
-		//~ if(solver.best_cost_trial() == solver.global_best_cost()){
-			//~ return true;
-		//~ }
+		if(solver.best_cost_trial() == solver.global_best_cost()){
+			//Escribo el resultado en el archivo de salida
+			FILE * outputFile;
+
+			outputFile = fopen ("solucion.out","w");
+			for (int i=0;i<pbm.dimension();i++){
+				fprintf (outputFile, "%d ",solver.best_solution_trial().var(i));
+			}
+			fclose (outputFile);
+
+			return true;
+		}
 		return false;
 		//int sol = solver
+
 	}
 
 	StopCondition_1::~StopCondition_1()
