@@ -51,9 +51,23 @@ skeleton newGA{
 			for (int j=0;j<pbm._dimension;j++)
 				pbm._matrizCostos[i][j]=-1;
 		}
+		
+            
+            
+            //Obtengo los nombres de las matrices asociadas
+            FILE* stream = fopen("nombreMatrices.txt", "r");
+            char costos[255];
+            char temporadas[255];
+            
+            fgets(costos, 1024, stream);
+            fgets(temporadas, 1024, stream);
+            
+            cout << "costos: " << strtok(costos,"\n") << endl;
+            cout << "temporadas: " << strtok(temporadas,"\n") << endl;
+            
 
 		//Cargo el archivo con costos
-	    FILE* stream = fopen("prueba_matriz", "r");
+	     stream = fopen(costos, "r");
 
 	    char line[1024];
 	    int j=0;
@@ -77,7 +91,7 @@ skeleton newGA{
 		}
 
 		//Cargo el archivo con temporadas
-	    stream = fopen("prueba_temporadas", "r");
+	    stream = fopen(temporadas, "r");
 
 	    j=0;
 	    while (fgets(line, 1024, stream))
