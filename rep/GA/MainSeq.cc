@@ -35,6 +35,13 @@ int main (int argc, char** argv)
 		ofstream fexit(argv[3]);
 		if(!fexit) show_message(13);
 		fexit << solver.userstatistics();
+		FILE * outputFile;
+
+		outputFile = fopen ("solucion.out","w");
+		for (int i=0;i<solver.pbm().dimension();i++){
+			fprintf (outputFile, "%d ",solver.best_solution_trial().var(i));
+		}
+		fclose (outputFile);
 
 	}
 	return(0);

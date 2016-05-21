@@ -268,7 +268,7 @@ skeleton newGA{
 	double Solution::fitness ()
 	{
 		//En caso que no sea montevideo la primer ciudad
-		if(_var[0] != 0)
+		if (_var[0] != 0) 
 			return float(INT_MAX);
 		
 		
@@ -281,6 +281,9 @@ skeleton newGA{
 		
 		for(int i = 1; i< _pbm.dimension();i++){
 			costo = costos[_var[i-1]][_var[i]];
+			
+			if (costo == -1)
+				return float(INT_MAX);
 			
 			if(dia < _pbm.getFinTempBaja()){
 				fitness += costo;
@@ -645,7 +648,7 @@ skeleton newGA{
 	bool StopCondition_1::EvaluateCondition(const Problem& pbm,const Solver& solver,const SetUpParams& setup)
 	{
 		//return ((int)solver.best_cost_trial() == pbm.dimension());
-		if(solver.best_cost_trial() == solver.global_best_cost()){
+/*		if(solver.best_cost_trial() == solver.global_best_cost()){
 			//Escribo el resultado en el archivo de salida
 			FILE * outputFile;
 
@@ -656,7 +659,7 @@ skeleton newGA{
 			fclose (outputFile);
 
 			return true;
-		}
+		}*/
 		return false;
 		//int sol = solver
 
