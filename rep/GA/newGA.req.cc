@@ -61,13 +61,10 @@ skeleton newGA{
             
             fgets(costos, 1024, stream);
             fgets(temporadas, 1024, stream);
-            
-            cout << "costos: " << strtok(costos,"\n") << endl;
-            cout << "temporadas: " << strtok(temporadas,"\n") << endl;
-            
+                        
 
 		//Cargo el archivo con costos
-	     stream = fopen(costos, "r");
+	     stream = fopen(strtok(costos,"\n"), "r");
 
 	    char line[1024];
 	    int j=0;
@@ -91,7 +88,7 @@ skeleton newGA{
 		}
 
 		//Cargo el archivo con temporadas
-	    stream = fopen(temporadas, "r");
+	    stream = fopen(strtok(temporadas,"\n"), "r");
 
 	    j=0;
 	    while (fgets(line, 1024, stream))

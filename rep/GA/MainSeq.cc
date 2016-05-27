@@ -27,7 +27,8 @@ int main (int argc, char** argv)
 
 	if (solver.pid()==0)
 	{
-		solver.show_state();
+		//solver.show_state();
+                cout << "Elapsed time: " << solver.time_spent_trial() / 1000 <<  "ms" <<endl;
 		cout << "Solution: " << solver.global_best_solution()
 		     << " Fitness: " << solver.global_best_solution().fitness() << endl;
 		cout << "\n\n :( ---------------------- THE END --------------- :) ";
